@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:cloudinary_api/uploader/cloudinary_uploader.dart';
 import 'package:cloudinary_url_gen/cloudinary.dart';
@@ -69,10 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> uploadImage2() async {
     var cloudinary = Cloudinary.fromStringUrl(
         'cloudinary://618741654814823:WJLK75MJ_Sg3XDJeh24h6GvOu1Q@ddcrefyem');
-    var response = await cloudinary
-        .uploader()
-        .upload(File(_imageFile!.path))
-        ?.then((value) {
+    await cloudinary.uploader().upload(File(_imageFile!.path))?.then((value) {
       print(value.data!.url);
       setState(() {
         _imageUrl = value.data?.url ?? '';
@@ -82,13 +78,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print('image urel $_imageUrl');
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: ListView(
           children: [
             ElevatedButton(
-              onPressed: () => pickImage(ImageSource.gallery),
+              onPressed: () => pickImage(ImageSource.gallery)
+                  .then((value) => uploadImage2()),
               child: const Text('Take Picture'),
             ),
             if (_imageFile != null) ...[
@@ -97,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 200,
               ),
               ElevatedButton(
-                onPressed: () => uploadImage(),
+                onPressed: () => uploadImage2(),
                 child: const Text('Upload image to cloud'),
               ),
             ],
